@@ -1,24 +1,33 @@
-import {Mongoose} from "mongoose";
+import {connect, connection} from "mongoose";
+import {BookModel} from "./models/book-model";
 
 
 class MongooseExample {
-    static async main(): Promise<void> {
-        const mongooseClient = new Mongoose();
+    static async initialize(): Promise<void> {
         console.log('Starting Mongoose Application');
         const uri = "mongodb+srv://testusername:testpassword@cluster0.0qe2y.mongodb.net/libraryDb?retryWrites=true&w=majority";
 
         // callbacks
-        mongooseClient.connection.on('error', () => {
+        connection.on('error', () => {
             console.log('Connection error: ❌');
         });
-        mongooseClient.connection.once('open', () => {
+        connection.once('open', () => {
             console.log('Connection successful ✅');
         });
 
         // connect
-        await mongooseClient.connect(uri);
+        await connect(uri);
     }
 
+    static async createNewBook(): Promise<void> {
+        const doc = new BookModel({
+            name: 'My Special Book',
+            author: 'My Special Author',
+        });
+        await doc.save();
+    }
 }
 
-MongooseExample.main().catch(console.error);
+MongooseExample.initialize().then(async () => {
+    await MongooseExample.createNewBook();
+}).catch(console.error);
