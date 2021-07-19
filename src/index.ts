@@ -26,8 +26,15 @@ class MongooseExample {
         });
         await doc.save();
     }
+
+    static async runBookQuery(): Promise<void> {
+        const result = await BookModel.find({name: "My Book 2"});
+        console.log(result)
+        console.log(result.length)
+    }
 }
 
 MongooseExample.initialize().then(async () => {
-    await MongooseExample.createNewBook();
+    // await MongooseExample.createNewBook();
+    await MongooseExample.runBookQuery();
 }).catch(console.error);
