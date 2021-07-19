@@ -1,4 +1,4 @@
-import {connect, connection} from "mongoose";
+import {connect} from "mongoose";
 import {BookModel} from "./models/book-model";
 
 
@@ -7,16 +7,13 @@ class MongooseExample {
         console.log('Starting Mongoose Application');
         const uri = "mongodb+srv://testusername:testpassword@cluster0.0qe2y.mongodb.net/libraryDb?retryWrites=true&w=majority";
 
-        // callbacks
-        connection.on('error', () => {
-            console.log('Connection error: ❌');
-        });
-        connection.once('open', () => {
-            console.log('Connection successful ✅');
-        });
-
         // connect
-        await connect(uri);
+        try {
+            await connect(uri);
+            console.log('Connection successful ✅');
+        } catch (e) {
+            console.log('Connection error: ❌');
+        }
     }
 
     static async createNewBook(): Promise<void> {
@@ -32,9 +29,16 @@ class MongooseExample {
         console.log(result)
         console.log(result.length)
     }
+
+    static async getAllBooks(): Promise<void> {
+        const result = await BookModel.find();
+        console.log(result)
+        result.map((book) => book.printLabel());
+    }
 }
 
 MongooseExample.initialize().then(async () => {
-    // await MongooseExample.createNewBook();
-    await MongooseExample.runBookQuery();
+    await MongooseExample.createNewBook();
+    // await MongooseExample.runBookQuery();
+    await MongooseExample.getAllBooks();
 }).catch(console.error);
